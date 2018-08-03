@@ -1,0 +1,85 @@
+---
+title: "CBR System para Prever Preço de Carros utilizando KNN"
+output: html_notebook
+---
+
+
+```{r}
+file <- read.csv("data.csv")
+file
+```
+
+```{r}
+library(magrittr)
+library(tidyverse)
+```
+
+```{r}
+nv_dataset <- file %>%
+  mutate(
+    Make = as.numeric(factor(Make)),
+    Model = as.numeric(factor(Model)),
+    `Engine.Fuel.Type` = as.numeric(factor(`Engine.Fuel.Type`)),
+    `Transmission.Type` = as.numeric(factor(`Transmission.Type`)),
+    Driven_Wheels = as.numeric(factor(Driven_Wheels)),
+    `Market.Category` = as.numeric(factor(`Market.Category`)),
+    `Vehicle.Size` = as.numeric(factor(`Vehicle.Size`)),
+    `Vehicle.Style` = as.numeric(factor(`Vehicle.Style`))) 
+
+nv_dataset
+```
+
+```{r}
+
+```
+
+Agora é possível rodar KNN aproveitando todos os preditores.
+
+
+```{r}
+num.na.data <- apply(nv_dataset, 1, 
+                     function(x){any(is.na(x))})
+                                    noquote(paste('Dados incompletos: ', sum(num.na.data)))
+```
+ Há 99 especificações de carros com dados incompletos (ou não possuem a funcionalidade ou estão simplesmente faltando). 
+ 
+```{r}
+nv_dataset <- na.omit(nv_dataset)
+num.na.data <- apply(nv_dataset, 1, 
+                     function(x){any(is.na(x))})
+                                    noquote(paste('Dados incompletos: ', sum(num.na.data)))
+```
+
+Particionando os dados
+
+```{r}
+nv_dataset$id <- 1:nrow(nv_dataset)
+train <- car_data %>% dplyr::sample_frac(.8)
+test <- dplyr::anti_join(nv_dataset, train, by = "id") 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
