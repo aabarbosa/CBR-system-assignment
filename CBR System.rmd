@@ -1,7 +1,12 @@
 ---
-title: "CBR System para Prever Preço de Carros utilizando KNN"
+title: "CBR System (Prever o preço de Carros utilizando o algoritmo K-Nearest Neighbors)"
 output: html_notebook
 ---
+
+
+```{r}
+library(tidyverse)
+```
 
 
 ```{r}
@@ -9,10 +14,6 @@ file <- read.csv("data.csv")
 file
 ```
 
-```{r}
-library(magrittr)
-library(tidyverse)
-```
 
 ```{r}
 nv_dataset <- file %>%
@@ -48,32 +49,41 @@ nv_dataset <- na.omit(nv_dataset)
 num.na.data <- apply(nv_dataset, 1, 
                      function(x){any(is.na(x))})
                                     noquote(paste('Dados incompletos: ', sum(num.na.data)))
+nv_dataset$id <- 1:nrow(nv_dataset)
 ```
 
 Particionando os dados
 
 ```{r}
-nv_dataset$id <- 1:nrow(nv_dataset)
-train <- car_data %>% dplyr::sample_frac(.8)
-test <- dplyr::anti_join(nv_dataset, train, by = "id") 
-
+train <- nv_dataset %>% sample_frac(.8)
+test <- anti_join(nv_dataset, train, by = "id") 
 ```
 
 
 
+Treinamento
+
+```{r}
+set.seed(13)
+
+preco_real <- c(test %>% select(MSRP))$MSRP
+
+  model.knn <- caret::train(MSRP ~ .,
+           tuneGrid = expand.grid(k = seq(1,10,1)),
+           data = train,
+           method = "knn")
+  pred_MSRP <- predict(model.knn, test %>% select(-MSRP))
+  hydroGOF::mse(preco_real, preco_pred)
+
+model.knn
+```
 
 
+Observa-se que o modelo KNN não se mostrou adequado para prever o preço desses carros. O melhor modelo agrupou K = 1 e assim procurou reproduzir as observações de treino ou aumentou o erro em outros modelos para k > 1. Espera-se que o padrão continue com mais dados, como o erro cresceu linearmente com o K, no exemplo acima.
 
-
-
-
-
-
-
-
-
-
-
+```{r}
+plot(model.knn)
+```
 
 
 
